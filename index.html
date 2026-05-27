@@ -755,6 +755,164 @@
     }
 
     /* =========================================================
+       Worked example block (used in both tree-result and guided result)
+       ========================================================= */
+    .tree-result {
+      position: relative;
+      max-width: 1000px;
+      margin: 24px auto 0;
+      background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+      border-radius: 24px;
+      border: 1px solid var(--border-soft);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 1px 2px rgba(0, 0, 0, 0.4),
+        0 24px 48px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      animation: exampleIn 460ms var(--ease-out);
+    }
+    .tree-result::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--indigo), var(--purple));
+      box-shadow: 0 0 12px rgba(129, 140, 248, 0.5);
+    }
+    @keyframes exampleIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .tree-result .example-block { padding: 34px 36px 28px; }
+
+    /* Guided variant — sits inside the existing result card */
+    #g-example {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-soft);
+      text-align: left;
+    }
+
+    .example-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--indigo);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+
+    .example-problem { margin-bottom: 22px; }
+    .example-problem code {
+      display: inline-block;
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      color: var(--cyan-soft);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.15rem;
+      font-weight: 600;
+      padding: 12px 18px;
+      border-radius: 12px;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .example-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 22px;
+      counter-reset: step;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .example-steps li {
+      counter-increment: step;
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 6px 14px;
+      align-items: start;
+    }
+    .example-steps li::before {
+      content: counter(step);
+      grid-column: 1;
+      grid-row: 1;
+      align-self: start;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--indigo-dk), var(--purple-dk));
+      color: white;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 4px 10px rgba(99, 102, 241, 0.35);
+    }
+    .step-note {
+      grid-column: 2;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1.4;
+      padding-top: 5px;
+    }
+    .step-math {
+      grid-column: 2;
+      grid-row: 2;
+      display: inline-block;
+      width: fit-content;
+      max-width: 100%;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--cyan-soft);
+      background: rgba(34, 211, 238, 0.06);
+      border: 1px solid rgba(34, 211, 238, 0.14);
+      padding: 6px 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .example-answer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px 16px;
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      border-radius: 12px;
+    }
+    .answer-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+    .example-answer code {
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--green-soft);
+    }
+
+    /* =========================================================
        Mobile
        ========================================================= */
     @media (max-width: 720px) {
@@ -773,6 +931,11 @@
       .compare-table thead th,
       .compare-table tbody td { padding: 14px 14px; font-size: 0.88rem; }
       .compare-table tbody td:first-child { width: auto; white-space: normal; }
+      .tree-result .example-block { padding: 28px 22px 22px; }
+      .example-problem code { font-size: 1rem; padding: 10px 14px; }
+      .example-steps li { grid-template-columns: 28px 1fr; }
+      .example-steps li::before { width: 26px; height: 26px; font-size: 0.78rem; }
+      .step-math { white-space: normal; }
     }
   </style>
 </head>
@@ -1105,6 +1268,9 @@
 
       </svg>
 
+      <!-- Worked example panel that appears below the SVG when a final is reached -->
+      <div class="tree-result" id="tree-result" hidden></div>
+
       <!-- =================== GUIDED VIEW =================== -->
       <div class="guided" id="guided">
         <div class="guided-card">
@@ -1124,6 +1290,7 @@
             <span class="result-tag method" id="r-tag">Method</span>
             <h2 class="result-title method" id="r-title">Use factoring!</h2>
             <p class="result-sub" id="r-sub"></p>
+            <section class="example-block" id="g-example" hidden></section>
           </div>
 
           <div class="guided-controls">
@@ -1229,6 +1396,57 @@
                              kind: "oval", icon: ICON_CHECK },
     };
 
+    //notQuadratic intentionally has no entry — it's a dead-end, no method to demo.
+    const examples = {
+      useFactoring: {
+        problem: "x² - 8x = 9",
+        steps: [
+          { note: "Bring everything over to one side", math: "x² - 8x - 9 = 0" },
+          { note: "Factor the quadratic using the diamond method", math: "What two numbers multiply to -9 and add to -8?" },
+          { note: "Solve for x", math: "x = 9 or x = -1" },
+        ],
+        answer: "x = 9 and x = -1",
+      },
+      useGraphing: {
+        problem: "(x - 4)² - 9 = 0",
+        steps: [
+          { note: "Plug the problem into the Desmos graphing calculator"},
+          { note: "Identify the x-intercepts", math: "x = 1, 7" },
+          { note: "Profit" },
+        ],
+        answer: "x = 1 and x = 7",
+      },
+      useSquareRoots: {
+        problem: "(x - 4)² - 9 = 0",
+        steps: [
+          { note: "Add 9 to both sides", math: "(x - 4)² = 9" },
+          { note: "Take the square root of both sides", math: "x - 4 = ±3" },
+          { note: "Solve for x", math: "Add 4 to both sides and then do the arithemtic" },
+        ],
+        answer: "x = 7 and x = 1",
+      },
+      useCompletingSquare: {
+        problem: "2x² + x - 15 = 0",
+        steps: [
+          { note: "[step 1 explanation]", math: "[step 1 math]" },
+          { note: "[step 2 explanation]", math: "[step 2 math]" },
+          { note: "[step 3 explanation]", math: "[step 3 math]" },
+          { note: "[step 4 explanation]", math: "[step 4 math]" },
+        ],
+        answer: "[final answer]",
+      },
+      useQuadraticFormula: {
+        problem: "x² + 2x -24 = 0",
+        steps: [
+          { note: "Plug this into the quadratic formula", math: "x = [-2 ± √(2² - 4(1)(-24))] / (2(1))" },
+          { note: "Simply", math: "x = [-2 ± √100] / 2" },
+          { note: "Calculate the square root", math: "x = [-2 ± √100] / 2" },
+          { note: "Solve for x", math: "x = [-2 ± 10] / 2" },
+        ],
+        answer: "x = 4 or x = -6",
+      },
+    };
+
     const MAX_DEPTH = 6;
 
     /* ==================================================================
@@ -1269,6 +1487,29 @@
       pathEl.style.transition = "";
       pathEl.style.strokeDasharray = "";
       pathEl.style.strokeDashoffset = "";
+    }
+
+    // Renders the shared worked-example block into either the tree-result
+    // panel or the guided result card's #g-example slot. Pass ex = null/undefined
+    // (e.g. when current node isn't a result, or it's notQuadratic) to hide.
+    function renderExampleBlock(container, ex) {
+      if (!ex) { container.hidden = true; container.innerHTML = ""; return; }
+      container.hidden = false;
+      const steps = ex.steps.map(s => `
+        <li>
+          <span class="step-note">${s.note}</span>
+          <code class="step-math">${s.math}</code>
+        </li>
+      `).join("");
+      container.innerHTML = `
+        <span class="example-tag">Worked example</span>
+        <div class="example-problem"><code>${ex.problem}</code></div>
+        <ol class="example-steps">${steps}</ol>
+        <div class="example-answer">
+          <span class="answer-label">Answer</span>
+          <code>${ex.answer}</code>
+        </div>
+      `;
     }
 
     function renderTree() {
@@ -1316,6 +1557,11 @@
 
       prevChosenEdges.clear();
       for (const id of nextChosen) prevChosenEdges.add(id);
+
+      // Tree-mode worked-example panel below the SVG.
+      const treeResult = document.getElementById("tree-result");
+      const ex = results.has(current) ? examples[current] : null;
+      renderExampleBlock(treeResult, ex);
     }
 
     /* ==================================================================
@@ -1367,6 +1613,12 @@
         els.rTitle.textContent = info.title;
         els.rTitle.className   = `result-title ${info.kind}`;
         els.rSub.textContent   = info.sub;
+
+        // Worked example inside the result card (skips notQuadratic — no entry)
+        renderExampleBlock(
+          document.getElementById("g-example"),
+          examples[current]
+        );
 
         els.progress.style.width = "100%";
         reanimate(els.stateR);
