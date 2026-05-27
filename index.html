@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Which Quadratic Method Should I Use?</title>
+  <style>
+    /* ---------- Base ---------- */
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      color: #1f2937;
+      background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #fdf2f8 100%);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+      max-width: 640px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      letter-spacing: -0.01em;
+      color: #111827;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: #6b7280;
+      font-size: 0.98rem;
+    }
+
+    /* ---------- Card ---------- */
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 36px 32px;
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 12px 32px rgba(15, 23, 42, 0.08);
+      text-align: center;
+      animation: fadeIn 220ms ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .question {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin: 0 0 28px;
+      line-height: 1.35;
+      color: #111827;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ---------- Buttons ---------- */
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: transform 80ms ease, box-shadow 120ms ease, background 120ms ease;
+      min-width: 110px;
+    }
+
+    button:active { transform: translateY(1px); }
+
+    .btn-yes {
+      background: #10b981;
+      color: white;
+      box-shadow: 0 2px 0 #059669, 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+    .btn-yes:hover { background: #059669; }
+
+    .btn-no {
+      background: #ef4444;
+      color: white;
+      box-shadow: 0 2px 0 #dc2626, 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+    .btn-no:hover { background: #dc2626; }
+
+    .btn-restart {
+      background: #4f46e5;
+      color: white;
+      box-shadow: 0 2px 0 #4338ca, 0 4px 12px rgba(79, 70, 229, 0.25);
+      margin-top: 24px;
+    }
+    .btn-restart:hover { background: #4338ca; }
+
+    /* ---------- Result card ---------- */
+    .card.result {
+      background: linear-gradient(160deg, #ecfdf5 0%, #f0f9ff 100%);
+      border: 2px solid #6ee7b7;
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 16px 36px rgba(16, 185, 129, 0.18);
+    }
+
+    .card.result.dead-end {
+      background: linear-gradient(160deg, #fef2f2 0%, #fff7ed 100%);
+      border-color: #fca5a5;
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 16px 36px rgba(239, 68, 68, 0.15);
+    }
+
+    .result-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #10b981;
+      color: white;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 64px;
+      margin: 0 auto 18px;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+    }
+
+    .card.result.dead-end .result-icon {
+      background: #ef4444;
+      box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
+    }
+
+    .result-label {
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.78rem;
+      color: #047857;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card.result.dead-end .result-label { color: #b91c1c; }
+
+    .result-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    footer {
+      margin-top: 28px;
+      color: #9ca3af;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Which method should I use?</h1>
+      <p class="subtitle">A quick decision tree for solving quadratic equations.</p>
+    </header>
+
+    <main id="app"></main>
+
+    <footer>Algebra · Decision Tree</footer>
+  </div>
+
+  <script>
+    // ---------- Decision tree ----------
+    // Each node is either a question (has yes/no pointers to other node ids)
+    // or a result (has `result: true` and a `text` to display).
+    const tree = {
+      start: {
+        question: "Do you have a quadratic equation?",
+        yes: "factorable",
+        no:  "notQuadratic",
+      },
+      factorable: {
+        question: "Can it be easily factored?",
+        yes: "useFactoring",
+        no:  "needExact",
+      },
+      needExact: {
+        question: "Do you need an exact answer?",
+        yes: "hasBx",
+        no:  "useGraphing",
+      },
+      hasBx: {
+        question: "Is there a bx term?",
+        yes: "aEquals1",
+        no:  "useSquareRoots",
+      },
+      aEquals1: {
+        question: "Is a = 1?",
+        yes: "bxEven",
+        no:  "useQuadraticFormula",
+      },
+      bxEven: {
+        question: "Is your bx term even?",
+        yes: "useCompletingSquare",
+        no:  "useQuadraticFormula",
+      },
+
+      // Results
+      notQuadratic:         { result: true, deadEnd: true,
+                              text: "This tool only applies to quadratic equations." },
+      useFactoring:         { result: true, text: "Use factoring!" },
+      useGraphing:          { result: true, text: "Use graphing!" },
+      useSquareRoots:       { result: true, text: "Use square roots!" },
+      useQuadraticFormula:  { result: true, text: "Use the quadratic formula!" },
+      useCompletingSquare:  { result: true, text: "Use completing the square!" },
+    };
+
+    // ---------- Render ----------
+    const app = document.getElementById("app");
+
+    function render(nodeId) {
+      const node = tree[nodeId];
+      app.innerHTML = ""; // clear previous card
+
+      const card = document.createElement("section");
+
+      if (node.result) {
+        card.className = "card result" + (node.deadEnd ? " dead-end" : "");
+
+        const icon = document.createElement("div");
+        icon.className = "result-icon";
+        icon.textContent = node.deadEnd ? "!" : "✓";
+        card.appendChild(icon);
+
+        const label = document.createElement("div");
+        label.className = "result-label";
+        label.textContent = node.deadEnd ? "Not applicable" : "Recommended method";
+        card.appendChild(label);
+
+        const text = document.createElement("p");
+        text.className = "result-text";
+        text.textContent = node.text;
+        card.appendChild(text);
+
+        const restart = document.createElement("button");
+        restart.className = "btn-restart";
+        restart.textContent = "Start Over";
+        restart.addEventListener("click", () => render("start"));
+        card.appendChild(restart);
+      } else {
+        card.className = "card";
+
+        const q = document.createElement("p");
+        q.className = "question";
+        q.textContent = node.question;
+        card.appendChild(q);
+
+        const row = document.createElement("div");
+        row.className = "button-row";
+
+        const yesBtn = document.createElement("button");
+        yesBtn.className = "btn-yes";
+        yesBtn.textContent = "Yes";
+        yesBtn.addEventListener("click", () => render(node.yes));
+
+        const noBtn = document.createElement("button");
+        noBtn.className = "btn-no";
+        noBtn.textContent = "No";
+        noBtn.addEventListener("click", () => render(node.no));
+
+        row.appendChild(yesBtn);
+        row.appendChild(noBtn);
+        card.appendChild(row);
+      }
+
+      app.appendChild(card);
+    }
+
+    render("start");
+  </script>
+</body>
+</html>
