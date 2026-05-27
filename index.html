@@ -871,7 +871,6 @@
     }
     .step-math {
       grid-column: 2;
-      grid-row: 2;
       display: inline-block;
       width: fit-content;
       max-width: 100%;
@@ -1410,9 +1409,9 @@
       useGraphing: {
         problem: "(x - 4)² - 9 = 0",
         steps: [
-          { note: "Plug the problem into the Desmos graphing calculator"},
+          { note: "Plug the problem into the Desmos graphing calculator", math: "I love desmos: https://www.desmos.com/calculator" },
           { note: "Identify the x-intercepts", math: "x = 1, 7" },
-          { note: "Profit" },
+          { note: "Profit", math: "Congratulations! You got the answer without doing any algebraic manipulations or nasty math!" },
         ],
         answer: "x = 1 and x = 7",
       },
@@ -1421,19 +1420,19 @@
         steps: [
           { note: "Add 9 to both sides", math: "(x - 4)² = 9" },
           { note: "Take the square root of both sides", math: "x - 4 = ±3" },
-          { note: "Solve for x", math: "Add 4 to both sides and then do the arithemtic" },
+          { note: "Solve for x", math: "Add 4 to both sides and then do the arithmetic" },
         ],
         answer: "x = 7 and x = 1",
       },
       useCompletingSquare: {
-        problem: "2x² + x - 15 = 0",
+        problem: "x² + 2x -24 = 0",
         steps: [
-          { note: "[step 1 explanation]", math: "[step 1 math]" },
-          { note: "[step 2 explanation]", math: "[step 2 math]" },
-          { note: "[step 3 explanation]", math: "[step 3 math]" },
-          { note: "[step 4 explanation]", math: "[step 4 math]" },
+          { note: "Add 24 to both sides", math: "x² + 2x = 24" },
+          { note: "Complete the square", math: "Divide 2 by 2 and then square it, getting x² + 2x + 1 = 24 + 1" },
+          { note: "Factor the left side", math: "You can use the pyramind method to factor and then get: (x + 1)² = 25" },
+          { note: "Take the square root of both sides", math: "x + 1 = ±5. Subtract 1 from both sides and then do the arithmetic." },
         ],
-        answer: "[final answer]",
+        answer: "x = 4 or x = -6",
       },
       useQuadraticFormula: {
         problem: "x² + 2x -24 = 0",
