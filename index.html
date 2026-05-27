@@ -5,83 +5,202 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quadratic Method Flowchart</title>
   <style>
-    /* ---------- Page ---------- */
-    * { box-sizing: border-box; }
+    /* =========================================================
+       Base
+       ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg-1: #eef2ff;
+      --bg-2: #f5f3ff;
+      --bg-3: #fdf2f8;
+      --ink:        #0f172a;
+      --ink-soft:   #475569;
+      --ink-mute:   #94a3b8;
+      --border:     #e5e7eb;
+      --border-soft:#eef0f3;
+      --surface:    #ffffff;
+      --indigo:     #4f46e5;
+      --indigo-dk:  #4338ca;
+      --green:      #10b981;
+      --green-dk:   #059669;
+      --red:        #ef4444;
+      --red-dk:     #dc2626;
+      --yellow:     #fef3c7;
+      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+    }
     html, body {
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                    "Helvetica Neue", Arial, sans-serif;
-      color: #1f2937;
-      background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #fdf2f8 100%);
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 800px at 80% -10%, #ede9fe 0%, transparent 60%),
+        radial-gradient(1000px 700px at 0% 100%, #fce7f3 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
+
     .page {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 36px 20px 60px;
+      padding: 40px 20px 80px;
     }
-    header { text-align: center; margin-bottom: 24px; }
+
+    /* =========================================================
+       Header
+       ========================================================= */
+    header { text-align: center; margin-bottom: 32px; }
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(1.5rem, 3vw, 2rem);
-      letter-spacing: -0.01em;
-      color: #111827;
+      margin: 0 0 10px;
+      font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+      letter-spacing: -0.02em;
+      font-weight: 700;
+      color: var(--ink);
     }
     .subtitle {
-      margin: 0 0 16px;
-      color: #6b7280;
-      font-size: 0.95rem;
+      margin: 0 0 22px;
+      color: var(--ink-soft);
+      font-size: 0.98rem;
     }
+
+    .controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Segmented mode toggle with sliding indicator */
+    .mode-toggle {
+      position: relative;
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 999px;
+      padding: 4px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .mode-btn {
+      position: relative;
+      z-index: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 18px;
+      font: 600 0.88rem inherit;
+      color: var(--ink-soft);
+      border-radius: 999px;
+      cursor: pointer;
+      width: 130px;
+      transition: color 280ms var(--ease);
+    }
+    .mode-toggle[data-mode="tree"]   .mode-btn[data-target-mode="tree"],
+    .mode-toggle[data-mode="guided"] .mode-btn[data-target-mode="guided"] {
+      color: white;
+    }
+    .mode-indicator {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      width: 130px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      box-shadow:
+        0 1px 2px rgba(79, 70, 229, 0.4),
+        0 6px 16px rgba(79, 70, 229, 0.28);
+      transition: left 380ms var(--ease);
+      left: 4px;
+    }
+    .mode-toggle[data-mode="guided"] .mode-indicator { left: 134px; }
+
     .reset {
       display: inline-flex;
       align-items: center;
-      padding: 8px 18px;
-      background: white;
-      border: 1.5px solid #e5e7eb;
-      color: #1f2937;
+      gap: 6px;
+      padding: 9px 16px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      color: var(--ink-soft);
       font: 600 0.88rem inherit;
       border-radius: 999px;
       cursor: pointer;
-      transition: all 150ms ease;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 200ms var(--ease);
     }
     .reset:hover {
-      border-color: #4f46e5;
-      color: #4f46e5;
+      color: var(--indigo);
+      border-color: rgba(79, 70, 229, 0.3);
+      background: rgba(255, 255, 255, 0.9);
     }
 
-    /* ---------- Flowchart SVG ---------- */
+    /* =========================================================
+       View container — swaps between tree and guided
+       ========================================================= */
+    .view-container { position: relative; }
+
+    body[data-mode="tree"]   .guided    { display: none; }
+    body[data-mode="guided"] .flowchart { display: none; }
+
+    .flowchart, .guided {
+      animation: viewIn 380ms var(--ease);
+    }
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================================
+       Flowchart (SVG)
+       ========================================================= */
     .flowchart {
       display: block;
       width: 100%;
       max-width: 1000px;
       height: auto;
       margin: 0 auto;
+      overflow: visible;
     }
 
-    /* Node shapes */
-    .node polygon,
-    .node rect,
-    .node ellipse {
-      transition: stroke 250ms ease, stroke-width 250ms ease, fill 250ms ease;
+    /* Nodes */
+    .node polygon, .node rect, .node ellipse {
+      transition: stroke 280ms var(--ease), stroke-width 280ms var(--ease),
+                  fill 280ms var(--ease);
     }
+    .node { transition: filter 280ms var(--ease); }
+    .node { filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.04))
+                     drop-shadow(0 8px 16px rgba(15, 23, 42, 0.06)); }
+
+    /* Question diamonds */
     .node.q polygon {
-      fill: #fef3c7;          /* warm yellow for decisions */
-      stroke: #1f2937;
-      stroke-width: 2.5;
+      fill: #fffbeb;
+      stroke: #d97706;
+      stroke-width: 2;
     }
+
+    /* Method rectangles */
     .node.method rect {
-      fill: #d1fae5;          /* light green for "use X" methods */
-      stroke: #1f2937;
-      stroke-width: 2.5;
+      fill: #ecfdf5;
+      stroke: #059669;
+      stroke-width: 2;
     }
+
+    /* Converging oval */
     .node.oval ellipse {
-      fill: #ddd6fe;          /* light purple for converging terminator */
-      stroke: #1f2937;
-      stroke-width: 2.5;
+      fill: #f5f3ff;
+      stroke: #7c3aed;
+      stroke-width: 2;
     }
-    .node.oval.dead ellipse {
-      fill: #fecaca;          /* light red for dead-end */
+
+    /* Dead-end octagon (stop sign) */
+    .node.octagon polygon {
+      fill: #fef2f2;
+      stroke: var(--red-dk);
+      stroke-width: 3;
     }
 
     /* Text inside nodes (rendered via <foreignObject>) */
@@ -93,340 +212,655 @@
       height: 100%;
       text-align: center;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #111827;
+      color: var(--ink);
       line-height: 1.25;
+      padding: 8px;
     }
     .node-text em { font-style: italic; }
     .node-text.diamond {
       font-size: 14px;
       font-weight: 600;
-      padding: 16px;
+      padding: 18px;
     }
-    .node-text.method {
-      font-size: 15px;
+    .node-text.method,
+    .node-text.oval,
+    .node-text.octagon {
+      font-size: 14.5px;
       font-weight: 700;
       padding: 8px;
     }
-    .node-text.oval {
-      font-size: 15px;
-      font-weight: 700;
-      padding: 10px;
-    }
     .node-text .tag {
       display: block;
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
-    .node-text.method .tag { color: #047857; }
-    .node-text.oval   .tag { color: #6d28d9; }
-    .node-text.oval.dead .tag { color: #b91c1c; }
+    .node-text.method  .tag { color: var(--green-dk); }
+    .node-text.oval    .tag { color: #7c3aed; }
+    .node-text.octagon .tag { color: var(--red-dk); }
+    .node-text.octagon .title { color: #7f1d1d; }
 
-    /* Edges (arrows) */
+    /* Edges */
     .edge { cursor: pointer; }
     .edge path {
-      stroke: #4b5563;
-      stroke-width: 2.5;
+      stroke: #94a3b8;
+      stroke-width: 2.2;
       fill: none;
-      transition: stroke 200ms ease;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      transition: stroke 220ms var(--ease), stroke-width 220ms var(--ease);
+    }
+
+    .edge .edge-lbl-pos { /* positioning wrapper — has translate attr */ }
+    .edge .edge-lbl {
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 240ms var(--ease), filter 240ms var(--ease);
     }
     .edge .edge-lbl rect {
       fill: white;
-      stroke: #9ca3af;
-      stroke-width: 1.2;
-      transition: all 200ms ease;
+      stroke: #cbd5e1;
+      stroke-width: 1.5;
+      transition: fill 220ms var(--ease), stroke 220ms var(--ease);
     }
     .edge .edge-lbl text {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
-      fill: #4b5563;
-      transition: fill 200ms ease;
+      fill: var(--ink-soft);
+      transition: fill 220ms var(--ease);
     }
-    .edge:hover path { stroke: #4f46e5; }
-    .edge:hover .edge-lbl rect { stroke: #4f46e5; fill: #eef2ff; }
-    .edge:hover .edge-lbl text { fill: #4f46e5; }
 
-    /* "Chosen" styling */
-    .edge.chosen path { stroke: #10b981; }
-    .edge.chosen .edge-lbl rect { fill: #10b981; stroke: #10b981; }
+    /* Hover state */
+    .edge:hover path {
+      stroke: var(--indigo);
+      stroke-width: 3;
+    }
+    .edge:hover .edge-lbl {
+      transform: scale(1.12);
+      filter: drop-shadow(0 4px 12px rgba(79, 70, 229, 0.35));
+    }
+    .edge:hover .edge-lbl rect {
+      fill: var(--indigo);
+      stroke: var(--indigo-dk);
+    }
+    .edge:hover .edge-lbl text { fill: white; }
+
+    /* Chosen state */
+    .edge.chosen path {
+      stroke: var(--green);
+      stroke-width: 3;
+    }
+    .edge.chosen .edge-lbl rect {
+      fill: var(--green);
+      stroke: var(--green-dk);
+    }
     .edge.chosen .edge-lbl text { fill: white; }
+    .edge.chosen .edge-lbl {
+      filter: drop-shadow(0 4px 10px rgba(16, 185, 129, 0.3));
+    }
+
     .node.chosen polygon,
     .node.chosen rect,
     .node.chosen ellipse {
-      stroke: #10b981;
-      stroke-width: 4;
+      stroke: var(--green);
+      stroke-width: 3.5;
+    }
+    .node.chosen {
+      filter: drop-shadow(0 4px 10px rgba(16, 185, 129, 0.18))
+              drop-shadow(0 10px 24px rgba(16, 185, 129, 0.18));
+    }
+    .node.chosen.final ellipse,
+    .node.chosen.final rect,
+    .node.chosen.final polygon {
+      animation: nodePulse 600ms var(--ease);
+    }
+    @keyframes nodePulse {
+      0%   { transform: scale(1); transform-origin: center; transform-box: fill-box; }
+      50%  { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    /* =========================================================
+       Guided mode (HTML)
+       ========================================================= */
+    .guided {
+      max-width: 580px;
+      margin: 12px auto 0;
+    }
+    .guided-card {
+      position: relative;
+      background: white;
+      border-radius: 24px;
+      padding: 44px 36px 32px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 12px 32px rgba(15, 23, 42, 0.08),
+        0 32px 64px rgba(15, 23, 42, 0.05);
+      overflow: hidden;
+    }
+
+    /* Subtle progress strip across the top of the card */
+    .progress {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--border-soft);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      border-radius: 0 999px 999px 0;
+      width: 0%;
+      transition: width 480ms var(--ease);
+    }
+
+    .step-pill {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--border-soft);
+      color: var(--ink-soft);
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .guided-state { animation: fadeUp 320ms var(--ease); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .q-text {
+      margin: 0 0 32px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.3;
+      letter-spacing: -0.005em;
+    }
+
+    .yes-no {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .btn-yes, .btn-no {
+      position: relative;
+      font: 700 1rem inherit;
+      border: none;
+      border-radius: 14px;
+      padding: 16px 18px;
+      cursor: pointer;
+      color: white;
+      transition: transform 180ms var(--ease), box-shadow 180ms var(--ease),
+                  background 180ms var(--ease);
+    }
+    .btn-yes {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow:
+        0 1px 2px rgba(5, 150, 105, 0.4),
+        0 6px 16px rgba(16, 185, 129, 0.32);
+    }
+    .btn-yes:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 2px 4px rgba(5, 150, 105, 0.5),
+        0 10px 22px rgba(16, 185, 129, 0.42);
+    }
+    .btn-yes:active { transform: translateY(0); }
+    .btn-no {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow:
+        0 1px 2px rgba(220, 38, 38, 0.4),
+        0 6px 16px rgba(239, 68, 68, 0.32);
+    }
+    .btn-no:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 2px 4px rgba(220, 38, 38, 0.5),
+        0 10px 22px rgba(239, 68, 68, 0.42);
+    }
+    .btn-no:active { transform: translateY(0); }
+
+    /* Result state */
+    .result-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    .result-tag.method  { background: #ecfdf5; color: var(--green-dk); }
+    .result-tag.oval    { background: #f5f3ff; color: #6d28d9; }
+    .result-tag.dead    { background: #fef2f2; color: var(--red-dk); }
+
+    .result-title {
+      margin: 0 0 8px;
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+    .result-sub {
+      margin: 0 0 28px;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+    }
+    .result-decor {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      font-size: 28px;
+      font-weight: 800;
+      color: white;
+    }
+    .result-decor.method { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4); }
+    .result-decor.oval   { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 6px 18px rgba(139, 92, 246, 0.4); }
+    .result-decor.dead   { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4); }
+
+    .guided-controls {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-soft);
+    }
+    .btn-link {
+      background: transparent;
+      border: none;
+      color: var(--ink-soft);
+      font: 600 0.85rem inherit;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 160ms var(--ease);
+    }
+    .btn-link:hover {
+      color: var(--indigo);
+      background: rgba(79, 70, 229, 0.06);
+    }
+    .btn-link[hidden] { display: none; }
+
+    /* =========================================================
+       Mobile
+       ========================================================= */
+    @media (max-width: 720px) {
+      .page { padding: 24px 14px 60px; }
+      .guided-card { padding: 36px 22px 22px; }
+      .q-text { font-size: 1.2rem; }
+      .result-title { font-size: 1.5rem; }
+      .controls { gap: 8px; }
+      .mode-btn { width: 110px; padding: 8px 12px; }
+      .mode-indicator { width: 110px; }
+      .mode-toggle[data-mode="guided"] .mode-indicator { left: 114px; }
     }
   </style>
 </head>
-<body>
+<body data-mode="tree">
   <div class="page">
     <header>
       <h1>Which method should I use to solve a quadratic?</h1>
-      <p class="subtitle">
-        Click a <strong>Yes</strong> or <strong>No</strong> label to trace your path through the tree.
-      </p>
-      <button class="reset" id="reset">Reset path</button>
+      <p class="subtitle">Trace your problem through the decision tree.</p>
+      <div class="controls">
+        <div class="mode-toggle" data-mode="tree" id="mode-toggle">
+          <button class="mode-btn" data-target-mode="tree">Full tree</button>
+          <button class="mode-btn" data-target-mode="guided">Step-by-step</button>
+          <div class="mode-indicator" aria-hidden="true"></div>
+        </div>
+        <button class="reset" id="reset">Reset</button>
+      </div>
     </header>
 
-    <svg class="flowchart" viewBox="0 0 1000 1320" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <!-- Two arrowhead markers so chosen arrows can have a green tip -->
-        <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6"
-                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M 0 0 L 12 6 L 0 12 z" fill="#4b5563" />
-        </marker>
-        <marker id="arrow-chosen" viewBox="0 0 12 12" refX="11" refY="6"
-                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M 0 0 L 12 6 L 0 12 z" fill="#10b981" />
-        </marker>
-      </defs>
+    <main class="view-container">
 
-      <!-- ============================ NODES ============================ -->
+      <!-- ============================== TREE VIEW ============================== -->
+      <svg class="flowchart" viewBox="0 0 1000 1320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 12 6 L 0 12 z" fill="#94a3b8" />
+          </marker>
+          <marker id="arrow-chosen" viewBox="0 0 12 12" refX="11" refY="6"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 12 6 L 0 12 z" fill="#10b981" />
+          </marker>
+          <marker id="arrow-hover" viewBox="0 0 12 12" refX="11" refY="6"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 12 6 L 0 12 z" fill="#4f46e5" />
+          </marker>
+        </defs>
 
-      <!-- Q1: start (diamond) -->
-      <g class="node q" data-node="start">
-        <polygon points="200,30 340,100 200,170 60,100" />
-        <foreignObject x="60" y="30" width="280" height="140">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-            Do you have a quadratic equation?
-          </div>
-        </foreignObject>
-      </g>
+        <!-- ============= NODES ============= -->
 
-      <!-- R: notQuadratic (oval, dead end) -->
-      <g class="node oval dead" data-node="notQuadratic">
-        <ellipse cx="700" cy="100" rx="140" ry="50" />
-        <foreignObject x="560" y="50" width="280" height="100">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text oval dead">
-            <div>
-              <span class="tag">Not applicable</span>
-              Not a quadratic equation
+        <!-- Q1: start -->
+        <g class="node q" data-node="start">
+          <polygon points="200,30 340,100 200,170 60,100" />
+          <foreignObject x="60" y="30" width="280" height="140">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
+              Do you have a quadratic equation?
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- R: notQuadratic — octagon (dead end / stop sign) -->
+        <g class="node octagon" data-node="notQuadratic">
+          <polygon points="582,60 818,60 840,82 840,118 818,140 582,140 560,118 560,82" />
+          <foreignObject x="560" y="60" width="280" height="80">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text octagon">
+              <div>
+                <span class="tag">Not applicable</span>
+                <div class="title">Not a quadratic equation</div>
+              </div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- Q2: factorable -->
+        <g class="node q" data-node="factorable">
+          <polygon points="200,220 340,290 200,360 60,290" />
+          <foreignObject x="60" y="220" width="280" height="140">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
+              Can it be easily factored?
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- R: useFactoring -->
+        <g class="node method" data-node="useFactoring">
+          <rect x="560" y="250" width="280" height="80" rx="14" />
+          <foreignObject x="560" y="250" width="280" height="80">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
+              <div>
+                <span class="tag">Method</span>
+                Use factoring!
+              </div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- Q3: needExact -->
+        <g class="node q" data-node="needExact">
+          <polygon points="200,410 340,480 200,550 60,480" />
+          <foreignObject x="60" y="410" width="280" height="140">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
+              Do you need an exact answer?
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- R: useGraphing -->
+        <g class="node method" data-node="useGraphing">
+          <rect x="560" y="440" width="280" height="80" rx="14" />
+          <foreignObject x="560" y="440" width="280" height="80">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
+              <div>
+                <span class="tag">Method</span>
+                Use graphing!
+              </div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- Q4: hasBx -->
+        <g class="node q" data-node="hasBx">
+          <polygon points="200,600 340,670 200,740 60,670" />
+          <foreignObject x="60" y="600" width="280" height="140">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
+              Is there a <em>bx</em> term?
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- R: useSquareRoots -->
+        <g class="node method" data-node="useSquareRoots">
+          <rect x="560" y="630" width="280" height="80" rx="14" />
+          <foreignObject x="560" y="630" width="280" height="80">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
+              <div>
+                <span class="tag">Method</span>
+                Use square roots!
+              </div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- Q5: aEquals1 -->
+        <g class="node q" data-node="aEquals1">
+          <polygon points="200,790 340,860 200,930 60,860" />
+          <foreignObject x="60" y="790" width="280" height="140">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
+              Is <em>a</em> = 1?
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- Q6: bxEven -->
+        <g class="node q" data-node="bxEven">
+          <polygon points="200,980 340,1050 200,1120 60,1050" />
+          <foreignObject x="60" y="980" width="280" height="140">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
+              Is your <em>bx</em> term even?
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- R: useCompletingSquare -->
+        <g class="node method" data-node="useCompletingSquare">
+          <rect x="560" y="1010" width="280" height="80" rx="14" />
+          <foreignObject x="560" y="1010" width="280" height="80">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
+              <div>
+                <span class="tag">Method</span>
+                Use completing the square!
+              </div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- R: useQuadraticFormula — oval (converging endpoint) -->
+        <g class="node oval" data-node="useQuadraticFormula">
+          <ellipse cx="500" cy="1220" rx="180" ry="60" />
+          <foreignObject x="320" y="1160" width="360" height="120">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-text oval">
+              <div>
+                <span class="tag">Method</span>
+                Use the quadratic formula!
+              </div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- ============= EDGES ============= -->
+
+        <!-- start → No → notQuadratic -->
+        <g class="edge" data-from="start" data-ans="no">
+          <path d="M 340 100 L 560 100" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(450, 80)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">No</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- start → Yes → factorable -->
+        <g class="edge" data-from="start" data-ans="yes">
+          <path d="M 200 170 L 200 220" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(238, 195)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">Yes</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- factorable → Yes → useFactoring -->
+        <g class="edge" data-from="factorable" data-ans="yes">
+          <path d="M 340 290 L 560 290" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(450, 270)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">Yes</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- factorable → No → needExact -->
+        <g class="edge" data-from="factorable" data-ans="no">
+          <path d="M 200 360 L 200 410" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(238, 385)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">No</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- needExact → No → useGraphing -->
+        <g class="edge" data-from="needExact" data-ans="no">
+          <path d="M 340 480 L 560 480" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(450, 460)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">No</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- needExact → Yes → hasBx -->
+        <g class="edge" data-from="needExact" data-ans="yes">
+          <path d="M 200 550 L 200 600" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(238, 575)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">Yes</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- hasBx → No → useSquareRoots -->
+        <g class="edge" data-from="hasBx" data-ans="no">
+          <path d="M 340 670 L 560 670" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(450, 650)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">No</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- hasBx → Yes → aEquals1 -->
+        <g class="edge" data-from="hasBx" data-ans="yes">
+          <path d="M 200 740 L 200 790" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(238, 765)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">Yes</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- aEquals1 → No → useQuadraticFormula (rounded L-route) -->
+        <g class="edge" data-from="aEquals1" data-ans="no">
+          <path d="M 340 860 L 880 860 Q 900 860 900 880 L 900 1200 Q 900 1220 880 1220 L 680 1220"
+                marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(450, 840)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">No</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- aEquals1 → Yes → bxEven -->
+        <g class="edge" data-from="aEquals1" data-ans="yes">
+          <path d="M 200 930 L 200 980" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(238, 955)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">Yes</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- bxEven → Yes → useCompletingSquare -->
+        <g class="edge" data-from="bxEven" data-ans="yes">
+          <path d="M 340 1050 L 560 1050" marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(450, 1030)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">Yes</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- bxEven → No → useQuadraticFormula (rounded L-route) -->
+        <g class="edge" data-from="bxEven" data-ans="no">
+          <path d="M 200 1120 L 200 1200 Q 200 1220 220 1220 L 320 1220"
+                marker-end="url(#arrow)" />
+          <g class="edge-lbl-pos" transform="translate(238, 1170)">
+            <g class="edge-lbl">
+              <rect x="-26" y="-15" width="52" height="30" rx="15" />
+              <text x="0" y="5" text-anchor="middle">No</text>
+            </g>
+          </g>
+        </g>
+
+      </svg>
+
+      <!-- ============================== GUIDED VIEW ============================== -->
+      <div class="guided" id="guided">
+        <div class="guided-card">
+          <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+
+          <!-- Question state -->
+          <div class="guided-state" id="state-question">
+            <div class="step-pill">Step <span id="step-num">1</span> of up to 6</div>
+            <p class="q-text" id="q-text">Do you have a quadratic equation?</p>
+            <div class="yes-no">
+              <button class="btn-yes" data-ans="yes" id="btn-yes">Yes</button>
+              <button class="btn-no"  data-ans="no"  id="btn-no">No</button>
             </div>
           </div>
-        </foreignObject>
-      </g>
 
-      <!-- Q2: factorable (diamond) -->
-      <g class="node q" data-node="factorable">
-        <polygon points="200,220 340,290 200,360 60,290" />
-        <foreignObject x="60" y="220" width="280" height="140">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-            Can it be easily factored?
+          <!-- Result state -->
+          <div class="guided-state" id="state-result" hidden>
+            <div class="result-decor method" id="r-decor">✓</div>
+            <span class="result-tag method" id="r-tag">Method</span>
+            <h2 class="result-title" id="r-title">Use factoring!</h2>
+            <p class="result-sub" id="r-sub">Recommended approach for your equation.</p>
           </div>
-        </foreignObject>
-      </g>
 
-      <!-- R: useFactoring (rectangle) -->
-      <g class="node method" data-node="useFactoring">
-        <rect x="560" y="250" width="280" height="80" rx="14" />
-        <foreignObject x="560" y="250" width="280" height="80">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
-            <div><span class="tag">Method</span>Use factoring!</div>
+          <div class="guided-controls">
+            <button class="btn-link" id="btn-back" hidden>← Back</button>
+            <button class="btn-link" id="btn-restart" hidden>Start over</button>
           </div>
-        </foreignObject>
-      </g>
+        </div>
+      </div>
 
-      <!-- Q3: needExact (diamond) -->
-      <g class="node q" data-node="needExact">
-        <polygon points="200,410 340,480 200,550 60,480" />
-        <foreignObject x="60" y="410" width="280" height="140">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-            Do you need an exact answer?
-          </div>
-        </foreignObject>
-      </g>
-
-      <!-- R: useGraphing -->
-      <g class="node method" data-node="useGraphing">
-        <rect x="560" y="440" width="280" height="80" rx="14" />
-        <foreignObject x="560" y="440" width="280" height="80">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
-            <div><span class="tag">Method</span>Use graphing!</div>
-          </div>
-        </foreignObject>
-      </g>
-
-      <!-- Q4: hasBx (diamond) -->
-      <g class="node q" data-node="hasBx">
-        <polygon points="200,600 340,670 200,740 60,670" />
-        <foreignObject x="60" y="600" width="280" height="140">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-            Is there a <em>bx</em> term?
-          </div>
-        </foreignObject>
-      </g>
-
-      <!-- R: useSquareRoots -->
-      <g class="node method" data-node="useSquareRoots">
-        <rect x="560" y="630" width="280" height="80" rx="14" />
-        <foreignObject x="560" y="630" width="280" height="80">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
-            <div><span class="tag">Method</span>Use square roots!</div>
-          </div>
-        </foreignObject>
-      </g>
-
-      <!-- Q5: aEquals1 (diamond) — note: no method beside it, its No routes to the oval below -->
-      <g class="node q" data-node="aEquals1">
-        <polygon points="200,790 340,860 200,930 60,860" />
-        <foreignObject x="60" y="790" width="280" height="140">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-            Is <em>a</em> = 1?
-          </div>
-        </foreignObject>
-      </g>
-
-      <!-- Q6: bxEven (diamond) -->
-      <g class="node q" data-node="bxEven">
-        <polygon points="200,980 340,1050 200,1120 60,1050" />
-        <foreignObject x="60" y="980" width="280" height="140">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-            Is your <em>bx</em> term even?
-          </div>
-        </foreignObject>
-      </g>
-
-      <!-- R: useCompletingSquare -->
-      <g class="node method" data-node="useCompletingSquare">
-        <rect x="560" y="1010" width="280" height="80" rx="14" />
-        <foreignObject x="560" y="1010" width="280" height="80">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
-            <div><span class="tag">Method</span>Use completing the square!</div>
-          </div>
-        </foreignObject>
-      </g>
-
-      <!-- R: useQuadraticFormula (oval, shared converging terminator) -->
-      <g class="node oval" data-node="useQuadraticFormula">
-        <ellipse cx="500" cy="1220" rx="170" ry="55" />
-        <foreignObject x="330" y="1165" width="340" height="110">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="node-text oval">
-            <div>
-              <span class="tag">Method</span>
-              Use the quadratic formula!
-            </div>
-          </div>
-        </foreignObject>
-      </g>
-
-      <!-- ============================ EDGES ============================ -->
-
-      <!-- start → No → notQuadratic -->
-      <g class="edge" data-from="start" data-ans="no">
-        <path d="M 340 100 L 560 100" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(450, 85)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">No</text>
-        </g>
-      </g>
-
-      <!-- start → Yes → factorable -->
-      <g class="edge" data-from="start" data-ans="yes">
-        <path d="M 200 170 L 200 220" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(232, 195)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">Yes</text>
-        </g>
-      </g>
-
-      <!-- factorable → Yes → useFactoring -->
-      <g class="edge" data-from="factorable" data-ans="yes">
-        <path d="M 340 290 L 560 290" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(450, 275)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">Yes</text>
-        </g>
-      </g>
-
-      <!-- factorable → No → needExact -->
-      <g class="edge" data-from="factorable" data-ans="no">
-        <path d="M 200 360 L 200 410" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(232, 385)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">No</text>
-        </g>
-      </g>
-
-      <!-- needExact → No → useGraphing -->
-      <g class="edge" data-from="needExact" data-ans="no">
-        <path d="M 340 480 L 560 480" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(450, 465)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">No</text>
-        </g>
-      </g>
-
-      <!-- needExact → Yes → hasBx -->
-      <g class="edge" data-from="needExact" data-ans="yes">
-        <path d="M 200 550 L 200 600" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(232, 575)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">Yes</text>
-        </g>
-      </g>
-
-      <!-- hasBx → No → useSquareRoots -->
-      <g class="edge" data-from="hasBx" data-ans="no">
-        <path d="M 340 670 L 560 670" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(450, 655)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">No</text>
-        </g>
-      </g>
-
-      <!-- hasBx → Yes → aEquals1 -->
-      <g class="edge" data-from="hasBx" data-ans="yes">
-        <path d="M 200 740 L 200 790" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(232, 765)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">Yes</text>
-        </g>
-      </g>
-
-      <!-- aEquals1 → No → useQuadraticFormula (routes right, then down, then left into oval) -->
-      <g class="edge" data-from="aEquals1" data-ans="no">
-        <path d="M 340 860 L 900 860 L 900 1220 L 670 1220" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(450, 845)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">No</text>
-        </g>
-      </g>
-
-      <!-- aEquals1 → Yes → bxEven -->
-      <g class="edge" data-from="aEquals1" data-ans="yes">
-        <path d="M 200 930 L 200 980" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(232, 955)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">Yes</text>
-        </g>
-      </g>
-
-      <!-- bxEven → Yes → useCompletingSquare -->
-      <g class="edge" data-from="bxEven" data-ans="yes">
-        <path d="M 340 1050 L 560 1050" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(450, 1035)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">Yes</text>
-        </g>
-      </g>
-
-      <!-- bxEven → No → useQuadraticFormula (down, then right into oval) -->
-      <g class="edge" data-from="bxEven" data-ans="no">
-        <path d="M 200 1120 L 200 1220 L 330 1220" marker-end="url(#arrow)" />
-        <g class="edge-lbl" transform="translate(232, 1170)">
-          <rect x="-18" y="-12" width="36" height="22" rx="11" />
-          <text x="0" y="3" text-anchor="middle">No</text>
-        </g>
-      </g>
-
-    </svg>
+    </main>
   </div>
 
   <script>
-    // Two paths (aEquals1→No and bxEven→No) both point to the same id —
-    // that's what makes useQuadraticFormula visually converge in the SVG.
+    /* ==================================================================
+       Data
+       ================================================================== */
     const tree = {
       start:      { yes: "factorable",          no: "notQuadratic"        },
       factorable: { yes: "useFactoring",        no: "needExact"           },
@@ -441,17 +875,54 @@
       "useCompletingSquare", "useQuadraticFormula",
     ]);
 
-    const path = [];
+    const questions = {
+      start:      "Do you have a quadratic equation?",
+      factorable: "Can it be easily factored?",
+      needExact:  "Do you need an exact answer?",
+      hasBx:      "Is there a <em>bx</em> term?",
+      aEquals1:   "Is <em>a</em> = 1?",
+      bxEven:     "Is your <em>bx</em> term even?",
+    };
 
-    function clearHighlights() {
-      document.querySelectorAll(".chosen").forEach(el => el.classList.remove("chosen"));
-      document.querySelectorAll(".edge path").forEach(p => {
-        p.setAttribute("marker-end", "url(#arrow)");
-      });
-    }
+    const resultInfo = {
+      notQuadratic:        { tag: "Not applicable", title: "Not a quadratic equation",
+                             sub: "This tool only works for quadratic equations.",
+                             kind: "dead", icon: "!" },
+      useFactoring:        { tag: "Method", title: "Use factoring!",
+                             sub: "Recommended approach for your equation.",
+                             kind: "method", icon: "✓" },
+      useGraphing:         { tag: "Method", title: "Use graphing!",
+                             sub: "Recommended approach for your equation.",
+                             kind: "method", icon: "✓" },
+      useSquareRoots:      { tag: "Method", title: "Use square roots!",
+                             sub: "Recommended approach for your equation.",
+                             kind: "method", icon: "✓" },
+      useCompletingSquare: { tag: "Method", title: "Use completing the square!",
+                             sub: "Recommended approach for your equation.",
+                             kind: "method", icon: "✓" },
+      useQuadraticFormula: { tag: "Method", title: "Use the quadratic formula!",
+                             sub: "Recommended approach for your equation.",
+                             kind: "oval", icon: "✓" },
+    };
 
-    function render() {
-      clearHighlights();
+    // Total possible question-depth used for the progress bar
+    const MAX_DEPTH = 6;
+
+    /* ==================================================================
+       State
+       ================================================================== */
+    const path = [];  // [{ from, ans }, ...]
+
+    /* ==================================================================
+       Tree-view rendering
+       ================================================================== */
+    function renderTree() {
+      // Clear all chosen / final classes
+      document.querySelectorAll(".node.chosen, .node.final, .edge.chosen")
+              .forEach(el => el.classList.remove("chosen", "final"));
+      document.querySelectorAll(".edge path")
+              .forEach(p => p.setAttribute("marker-end", "url(#arrow)"));
+
       let current = "start";
       for (const { from, ans } of path) {
         if (from !== current) break;
@@ -468,29 +939,143 @@
         if (nextEl) nextEl.classList.add("chosen");
 
         current = next;
-        if (results.has(current)) break;
+        if (results.has(current)) {
+          if (nextEl) nextEl.classList.add("final");
+          break;
+        }
       }
     }
 
-    document.addEventListener("click", e => {
-      const edge = e.target.closest("g.edge");
-      if (!edge) return;
-      const from = edge.dataset.from;
-      const ans  = edge.dataset.ans;
-      const idx = path.findIndex(c => c.from === from);
-      if (idx === -1) {
-        path.push({ from, ans });
+    /* ==================================================================
+       Guided-view rendering
+       ================================================================== */
+    const els = {
+      stateQ:     document.getElementById("state-question"),
+      stateR:     document.getElementById("state-result"),
+      stepNum:    document.getElementById("step-num"),
+      qText:      document.getElementById("q-text"),
+      btnYes:     document.getElementById("btn-yes"),
+      btnNo:      document.getElementById("btn-no"),
+      rDecor:     document.getElementById("r-decor"),
+      rTag:       document.getElementById("r-tag"),
+      rTitle:     document.getElementById("r-title"),
+      rSub:       document.getElementById("r-sub"),
+      btnBack:    document.getElementById("btn-back"),
+      btnRestart: document.getElementById("btn-restart"),
+      progress:   document.getElementById("progress-fill"),
+    };
+
+    function reanimate(el) {
+      // Force the fadeUp animation to replay
+      el.style.animation = "none";
+      void el.offsetWidth;
+      el.style.animation = "";
+    }
+
+    function renderGuided() {
+      // Walk path to find current node
+      let current = "start";
+      for (const { from, ans } of path) {
+        if (from !== current) break;
+        current = tree[current][ans];
+        if (results.has(current)) break;
+      }
+
+      const isResult = results.has(current);
+
+      els.btnBack.hidden    = path.length === 0;
+      els.btnRestart.hidden = path.length === 0;
+
+      if (isResult) {
+        const info = resultInfo[current];
+        els.stateQ.hidden = true;
+        els.stateR.hidden = false;
+
+        els.rDecor.textContent = info.icon;
+        els.rDecor.className   = `result-decor ${info.kind}`;
+        els.rTag.textContent   = info.tag;
+        els.rTag.className     = `result-tag ${info.kind}`;
+        els.rTitle.textContent = info.title;
+        els.rSub.textContent   = info.sub;
+
+        els.progress.style.width = "100%";
+        reanimate(els.stateR);
       } else {
+        els.stateR.hidden = true;
+        els.stateQ.hidden = false;
+
+        els.qText.innerHTML = questions[current];
+        els.stepNum.textContent = path.length + 1;
+        els.btnYes.dataset.from = current;
+        els.btnNo.dataset.from  = current;
+
+        const pct = (path.length / MAX_DEPTH) * 100;
+        els.progress.style.width = pct + "%";
+        reanimate(els.stateQ);
+      }
+    }
+
+    /* ==================================================================
+       Path mutation
+       ================================================================== */
+    function advance(from, ans) {
+      const idx = path.findIndex(c => c.from === from);
+      if (idx === -1) path.push({ from, ans });
+      else {
         path[idx] = { from, ans };
         path.length = idx + 1;
       }
       render();
+    }
+
+    function goBack() {
+      path.pop();
+      render();
+    }
+
+    function reset() {
+      path.length = 0;
+      render();
+    }
+
+    function render() {
+      renderTree();
+      renderGuided();
+    }
+
+    /* ==================================================================
+       Event wiring
+       ================================================================== */
+    // Tree mode — click any edge group
+    document.querySelector(".flowchart").addEventListener("click", e => {
+      const edge = e.target.closest("g.edge");
+      if (!edge) return;
+      advance(edge.dataset.from, edge.dataset.ans);
     });
 
-    document.getElementById("reset").addEventListener("click", () => {
-      path.length = 0;
-      clearHighlights();
+    // Guided mode — Yes/No buttons + controls
+    document.querySelector(".guided").addEventListener("click", e => {
+      const ansBtn = e.target.closest("button[data-ans]");
+      if (ansBtn) { advance(ansBtn.dataset.from, ansBtn.dataset.ans); return; }
+      if (e.target.id === "btn-back")    { goBack(); return; }
+      if (e.target.id === "btn-restart") { reset();  return; }
     });
+
+    // Reset button (header)
+    document.getElementById("reset").addEventListener("click", reset);
+
+    // Mode toggle
+    const modeToggle = document.getElementById("mode-toggle");
+    modeToggle.addEventListener("click", e => {
+      const btn = e.target.closest(".mode-btn");
+      if (!btn) return;
+      const mode = btn.dataset.targetMode;
+      modeToggle.dataset.mode = mode;
+      document.body.dataset.mode = mode;
+    });
+
+    // Initial render
+    render();
   </script>
 </body>
 </html>
