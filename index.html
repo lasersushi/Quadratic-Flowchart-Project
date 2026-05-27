@@ -4,67 +4,183 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quadratic Method Flowchart</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans for UI, JetBrains Mono for math notation -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
   <style>
     /* =========================================================
-       Base
+       Tokens
        ========================================================= */
     *, *::before, *::after { box-sizing: border-box; }
     :root {
-      --bg-1: #eef2ff;
-      --bg-2: #f5f3ff;
-      --bg-3: #fdf2f8;
-      --ink:        #0f172a;
-      --ink-soft:   #475569;
-      --ink-mute:   #94a3b8;
-      --border:     #e5e7eb;
-      --border-soft:#eef0f3;
-      --surface:    #ffffff;
-      --indigo:     #4f46e5;
-      --indigo-dk:  #4338ca;
-      --green:      #10b981;
-      --green-dk:   #059669;
-      --red:        #ef4444;
-      --red-dk:     #dc2626;
-      --yellow:     #fef3c7;
-      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+      /* Dark canvas */
+      --bg-0:        #060914;
+      --bg-1:        #0b1120;
+      --bg-2:        #131c30;
+      --bg-3:        #1e293b;
+      --border-soft: rgba(148, 163, 184, 0.14);
+      --border:      rgba(148, 163, 184, 0.22);
+
+      /* Text */
+      --text:        #f8fafc;
+      --text-soft:   #cbd5e1;
+      --text-mute:   #94a3b8;
+      --text-dim:    #64748b;
+
+      /* Accents */
+      --cyan:        #22d3ee;
+      --cyan-soft:   #67e8f9;
+      --indigo:      #818cf8;
+      --indigo-dk:   #6366f1;
+      --green:       #34d399;
+      --green-soft:  #6ee7b7;
+      --green-dk:    #10b981;
+      --red:         #fb7185;
+      --red-soft:    #fda4af;
+      --red-dk:      #e11d48;
+      --purple:      #a78bfa;
+      --purple-soft: #c4b5fd;
+      --purple-dk:   #7c3aed;
+
+      --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
     html, body {
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                   "Helvetica Neue", Arial, sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(1200px 800px at 80% -10%, #ede9fe 0%, transparent 60%),
-        radial-gradient(1000px 700px at 0% 100%, #fce7f3 0%, transparent 55%),
-        linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg-0);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
+    body {
+      background:
+        radial-gradient(ellipse 900px 600px at 75% -10%, rgba(99, 102, 241, 0.18), transparent 60%),
+        radial-gradient(ellipse 700px 500px at 0% 30%,  rgba(34, 211, 238, 0.10), transparent 55%),
+        radial-gradient(ellipse 800px 600px at 90% 100%, rgba(167, 139, 250, 0.12), transparent 55%),
+        var(--bg-0);
+      background-attachment: fixed;
+    }
+
+    ::selection { background: rgba(129, 140, 248, 0.35); color: white; }
+
     .page {
-      max-width: 1080px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 40px 20px 80px;
+      padding: 28px 20px 80px;
     }
 
     /* =========================================================
-       Header
+       Hero
        ========================================================= */
-    header { text-align: center; margin-bottom: 32px; }
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(1.6rem, 3.2vw, 2.2rem);
-      letter-spacing: -0.02em;
-      font-weight: 700;
-      color: var(--ink);
-    }
-    .subtitle {
-      margin: 0 0 22px;
-      color: var(--ink-soft);
-      font-size: 0.98rem;
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 64px 24px 44px;
+      margin-bottom: 36px;
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(19, 28, 48, 0.6), rgba(11, 17, 32, 0.4));
+      border: 1px solid var(--border-soft);
+      overflow: hidden;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 30px 60px -20px rgba(0, 0, 0, 0.5);
     }
 
+    .hero > *:not(.hero-decor) { position: relative; z-index: 1; }
+
+    .hero-decor {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .sym {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      user-select: none;
+      white-space: nowrap;
+      opacity: 0.9;
+    }
+    .sym-1 { top: 8%;  left: 5%;   font-size: 110px; transform: rotate(-12deg); color: rgba(34, 211, 238, 0.07); }
+    .sym-2 { top: 55%; left: 12%;  font-size: 78px;  transform: rotate(6deg);   color: rgba(129, 140, 248, 0.07); }
+    .sym-3 { top: 18%; right: 9%;  font-size: 96px;  transform: rotate(8deg);   color: rgba(167, 139, 250, 0.08); }
+    .sym-4 { top: 62%; right: 6%;  font-size: 86px;  transform: rotate(-14deg); color: rgba(52, 211, 153, 0.06); }
+    .sym-5 { top: 85%; left: 42%;  font-size: 70px;  transform: rotate(4deg);   color: rgba(251, 191, 36, 0.06); }
+    .sym-6 { top: 5%;  left: 48%;  font-size: 58px;  transform: rotate(-6deg);  color: rgba(129, 140, 248, 0.08); }
+    .sym-7 { top: 75%; right: 30%; font-size: 72px;  transform: rotate(12deg);  color: rgba(251, 113, 133, 0.06); }
+    .sym-8 { top: 32%; left: 32%;  font-size: 92px;  transform: rotate(-8deg);  color: rgba(34, 211, 238, 0.05); }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan-soft);
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+    .hero-eyebrow::before {
+      content: "";
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .hero-title {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 60%, #94a3b8 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      margin: 0 0 32px;
+      color: var(--text-soft);
+      font-size: 1.05rem;
+      font-weight: 500;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-subtitle .mono {
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 500;
+      font-size: 0.96em;
+      color: var(--cyan-soft);
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.18);
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin: 0 2px;
+    }
+
+    /* =========================================================
+       Controls (mode toggle + reset)
+       ========================================================= */
     .controls {
       display: inline-flex;
       align-items: center;
@@ -73,29 +189,28 @@
       justify-content: center;
     }
 
-    /* Segmented mode toggle with sliding indicator */
     .mode-toggle {
       position: relative;
       display: inline-flex;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(15, 23, 42, 0.06);
+      background: rgba(11, 17, 32, 0.7);
+      border: 1px solid var(--border-soft);
       border-radius: 999px;
       padding: 4px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     }
     .mode-btn {
       position: relative;
       z-index: 1;
       border: none;
       background: transparent;
-      padding: 8px 18px;
-      font: 600 0.88rem inherit;
-      color: var(--ink-soft);
+      padding: 10px 22px;
+      font: 600 0.88rem "Plus Jakarta Sans", sans-serif;
+      color: var(--text-mute);
       border-radius: 999px;
       cursor: pointer;
-      width: 130px;
+      width: 144px;
       transition: color 280ms var(--ease);
     }
     .mode-toggle[data-mode="tree"]   .mode-btn[data-target-mode="tree"],
@@ -106,51 +221,52 @@
       position: absolute;
       top: 4px;
       bottom: 4px;
-      width: 130px;
+      width: 144px;
       border-radius: 999px;
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      background: linear-gradient(135deg, var(--indigo-dk) 0%, var(--purple-dk) 100%);
       box-shadow:
-        0 1px 2px rgba(79, 70, 229, 0.4),
-        0 6px 16px rgba(79, 70, 229, 0.28);
-      transition: left 380ms var(--ease);
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        0 2px 6px rgba(99, 102, 241, 0.4),
+        0 10px 28px rgba(99, 102, 241, 0.3);
+      transition: left 420ms var(--ease-out);
       left: 4px;
     }
-    .mode-toggle[data-mode="guided"] .mode-indicator { left: 134px; }
+    .mode-toggle[data-mode="guided"] .mode-indicator { left: 148px; }
 
     .reset {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 9px 16px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(15, 23, 42, 0.06);
-      color: var(--ink-soft);
-      font: 600 0.88rem inherit;
+      gap: 8px;
+      padding: 11px 18px;
+      background: rgba(11, 17, 32, 0.7);
+      border: 1px solid var(--border-soft);
+      color: var(--text-soft);
+      font: 600 0.88rem "Plus Jakarta Sans", sans-serif;
       border-radius: 999px;
       cursor: pointer;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       transition: all 200ms var(--ease);
     }
     .reset:hover {
-      color: var(--indigo);
-      border-color: rgba(79, 70, 229, 0.3);
-      background: rgba(255, 255, 255, 0.9);
+      color: white;
+      border-color: rgba(129, 140, 248, 0.5);
+      background: rgba(99, 102, 241, 0.15);
+      transform: translateY(-1px);
     }
+    .reset svg { transition: transform 400ms var(--ease); }
+    .reset:hover svg { transform: rotate(-180deg); }
 
     /* =========================================================
-       View container — swaps between tree and guided
+       View container
        ========================================================= */
     .view-container { position: relative; }
-
     body[data-mode="tree"]   .guided    { display: none; }
     body[data-mode="guided"] .flowchart { display: none; }
 
-    .flowchart, .guided {
-      animation: viewIn 380ms var(--ease);
-    }
+    .flowchart, .guided { animation: viewIn 420ms var(--ease-out); }
     @keyframes viewIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
@@ -166,44 +282,75 @@
       overflow: visible;
     }
 
-    /* Nodes */
+    /* Nodes: dark surface with a colored "tag" border */
     .node polygon, .node rect, .node ellipse {
-      transition: stroke 280ms var(--ease), stroke-width 280ms var(--ease),
-                  fill 280ms var(--ease);
+      transition: stroke 280ms var(--ease), stroke-width 280ms var(--ease);
     }
-    .node { transition: filter 280ms var(--ease); }
-    .node { filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.04))
-                     drop-shadow(0 8px 16px rgba(15, 23, 42, 0.06)); }
+    .node {
+      transition: filter 320ms var(--ease);
+      filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+        drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
+    }
 
-    /* Question diamonds */
+    /* Question diamonds (cyan/indigo accent) */
     .node.q polygon {
-      fill: #fffbeb;
-      stroke: #d97706;
-      stroke-width: 2;
+      fill: url(#grad-diamond);
+      stroke: rgba(129, 140, 248, 0.45);
+      stroke-width: 1.75;
     }
 
-    /* Method rectangles */
+    /* Method rectangles (green accent) */
     .node.method rect {
-      fill: #ecfdf5;
-      stroke: #059669;
+      fill: url(#grad-method);
+      stroke: rgba(52, 211, 153, 0.55);
       stroke-width: 2;
     }
+    .node.method {
+      filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+        drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25))
+        drop-shadow(0 0 18px rgba(52, 211, 153, 0.14));
+    }
 
-    /* Converging oval */
+    /* Converging oval (purple accent) */
     .node.oval ellipse {
-      fill: #f5f3ff;
-      stroke: #7c3aed;
+      fill: url(#grad-oval);
+      stroke: rgba(167, 139, 250, 0.6);
       stroke-width: 2;
     }
-
-    /* Dead-end octagon (stop sign) */
-    .node.octagon polygon {
-      fill: #fef2f2;
-      stroke: var(--red-dk);
-      stroke-width: 3;
+    .node.oval {
+      filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+        drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25))
+        drop-shadow(0 0 24px rgba(167, 139, 250, 0.18));
     }
 
-    /* Text inside nodes (rendered via <foreignObject>) */
+    /* Octagon dead-end (red accent) */
+    .node.octagon polygon {
+      fill: url(#grad-octagon);
+      stroke: var(--red);
+      stroke-width: 2.5;
+    }
+    .node.octagon {
+      filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+        drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25))
+        drop-shadow(0 0 18px rgba(251, 113, 133, 0.18));
+    }
+
+    /* Hover on any node */
+    .node:hover polygon,
+    .node:hover rect,
+    .node:hover ellipse {
+      stroke-width: 2.5;
+    }
+    .node.q:hover polygon { stroke: var(--indigo); }
+    .node.method:hover rect { stroke: var(--green); }
+    .node.oval:hover ellipse { stroke: var(--purple); }
+    .node.octagon:hover polygon { stroke: var(--red-soft); stroke-width: 3; }
+
+    /* Text inside nodes (foreignObject) */
     .node-text {
       display: flex;
       align-items: center;
@@ -211,281 +358,360 @@
       width: 100%;
       height: 100%;
       text-align: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: var(--ink);
-      line-height: 1.25;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      color: var(--text);
+      line-height: 1.3;
       padding: 8px;
     }
-    .node-text em { font-style: italic; }
-    .node-text.diamond {
-      font-size: 14px;
+    .node-text em {
+      font-family: "JetBrains Mono", monospace;
+      font-style: italic;
       font-weight: 600;
-      padding: 18px;
+      color: var(--cyan-soft);
+      padding: 0 1px;
+    }
+    .node-text.diamond {
+      font-size: 14.5px;
+      font-weight: 600;
+      padding: 20px;
+      color: #f1f5f9;
     }
     .node-text.method,
     .node-text.oval,
-    .node-text.octagon {
-      font-size: 14.5px;
-      font-weight: 700;
-      padding: 8px;
-    }
+    .node-text.octagon { padding: 8px; }
+
     .node-text .tag {
       display: block;
+      font-family: "JetBrains Mono", monospace;
       font-size: 9.5px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
-    .node-text.method  .tag { color: var(--green-dk); }
-    .node-text.oval    .tag { color: #7c3aed; }
-    .node-text.octagon .tag { color: var(--red-dk); }
-    .node-text.octagon .title { color: #7f1d1d; }
+    .node-text .title {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+    }
+    .node-text.method  .tag   { color: var(--green); }
+    .node-text.method  .title { color: var(--green-soft); }
+    .node-text.oval    .tag   { color: var(--purple); }
+    .node-text.oval    .title { color: var(--purple-soft); }
+    .node-text.octagon .tag   { color: var(--red); }
+    .node-text.octagon .title { color: var(--red-soft); }
 
-    /* Edges */
+    /* Edges (arrows) */
     .edge { cursor: pointer; }
     .edge path {
-      stroke: #94a3b8;
-      stroke-width: 2.2;
+      stroke: #475569;
+      stroke-width: 2;
       fill: none;
       stroke-linejoin: round;
       stroke-linecap: round;
       transition: stroke 220ms var(--ease), stroke-width 220ms var(--ease);
     }
 
-    .edge .edge-lbl-pos { /* positioning wrapper — has translate attr */ }
+    /* Yes/No label pill — feels like a real button */
     .edge .edge-lbl {
       transform-box: fill-box;
       transform-origin: center;
-      transition: transform 240ms var(--ease), filter 240ms var(--ease);
+      transition: transform 240ms var(--ease-spring), filter 240ms var(--ease);
     }
     .edge .edge-lbl rect {
-      fill: white;
-      stroke: #cbd5e1;
+      fill: #131c30;
+      stroke: rgba(148, 163, 184, 0.4);
       stroke-width: 1.5;
       transition: fill 220ms var(--ease), stroke 220ms var(--ease);
     }
     .edge .edge-lbl text {
+      font-family: "Plus Jakarta Sans", sans-serif;
       font-size: 14px;
       font-weight: 700;
-      fill: var(--ink-soft);
+      fill: var(--text-soft);
       transition: fill 220ms var(--ease);
     }
 
-    /* Hover state */
+    /* Hover */
     .edge:hover path {
       stroke: var(--indigo);
       stroke-width: 3;
     }
     .edge:hover .edge-lbl {
-      transform: scale(1.12);
-      filter: drop-shadow(0 4px 12px rgba(79, 70, 229, 0.35));
+      transform: scale(1.18);
+      filter: drop-shadow(0 0 16px rgba(129, 140, 248, 0.6));
     }
     .edge:hover .edge-lbl rect {
-      fill: var(--indigo);
-      stroke: var(--indigo-dk);
+      fill: var(--indigo-dk);
+      stroke: var(--indigo);
     }
     .edge:hover .edge-lbl text { fill: white; }
 
-    /* Chosen state */
+    /* Chosen */
     .edge.chosen path {
       stroke: var(--green);
       stroke-width: 3;
     }
     .edge.chosen .edge-lbl rect {
-      fill: var(--green);
-      stroke: var(--green-dk);
+      fill: var(--green-dk);
+      stroke: var(--green);
     }
     .edge.chosen .edge-lbl text { fill: white; }
     .edge.chosen .edge-lbl {
-      filter: drop-shadow(0 4px 10px rgba(16, 185, 129, 0.3));
+      filter: drop-shadow(0 0 14px rgba(52, 211, 153, 0.55));
     }
 
+    /* Chosen nodes — colored glow */
     .node.chosen polygon,
     .node.chosen rect,
     .node.chosen ellipse {
       stroke: var(--green);
-      stroke-width: 3.5;
+      stroke-width: 3;
     }
     .node.chosen {
-      filter: drop-shadow(0 4px 10px rgba(16, 185, 129, 0.18))
-              drop-shadow(0 10px 24px rgba(16, 185, 129, 0.18));
+      filter:
+        drop-shadow(0 0 12px rgba(52, 211, 153, 0.35))
+        drop-shadow(0 0 32px rgba(52, 211, 153, 0.2))
+        drop-shadow(0 8px 18px rgba(0, 0, 0, 0.3));
     }
-    .node.chosen.final ellipse,
-    .node.chosen.final rect,
-    .node.chosen.final polygon {
-      animation: nodePulse 600ms var(--ease);
+
+    /* Final landing — accent-colored glow + pulse */
+    .node.method.final polygon, .node.method.final rect, .node.method.final ellipse { stroke: var(--green); }
+    .node.oval.final ellipse  { stroke: var(--purple); }
+    .node.octagon.final polygon { stroke: var(--red); }
+
+    .node.final.method  { filter: drop-shadow(0 0 18px rgba(52, 211, 153, 0.55)) drop-shadow(0 0 48px rgba(52, 211, 153, 0.3)); }
+    .node.final.oval    { filter: drop-shadow(0 0 18px rgba(167, 139, 250, 0.55)) drop-shadow(0 0 48px rgba(167, 139, 250, 0.3)); }
+    .node.final.octagon { filter: drop-shadow(0 0 18px rgba(251, 113, 133, 0.55)) drop-shadow(0 0 48px rgba(251, 113, 133, 0.3)); }
+
+    .node.final polygon, .node.final rect, .node.final ellipse {
+      animation: finalPulse 700ms var(--ease-spring);
+      transform-box: fill-box;
+      transform-origin: center;
     }
-    @keyframes nodePulse {
-      0%   { transform: scale(1); transform-origin: center; transform-box: fill-box; }
-      50%  { transform: scale(1.04); }
+    @keyframes finalPulse {
+      0%   { transform: scale(0.92); }
+      60%  { transform: scale(1.06); }
       100% { transform: scale(1); }
     }
 
     /* =========================================================
-       Guided mode (HTML)
+       Guided mode card
        ========================================================= */
     .guided {
       max-width: 580px;
-      margin: 12px auto 0;
+      margin: 16px auto 0;
     }
     .guided-card {
       position: relative;
-      background: white;
+      background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
       border-radius: 24px;
-      padding: 44px 36px 32px;
-      border: 1px solid rgba(15, 23, 42, 0.06);
+      padding: 48px 36px 32px;
+      border: 1px solid var(--border-soft);
       box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.04),
-        0 12px 32px rgba(15, 23, 42, 0.08),
-        0 32px 64px rgba(15, 23, 42, 0.05);
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 1px 2px rgba(0, 0, 0, 0.4),
+        0 24px 48px rgba(0, 0, 0, 0.35),
+        0 48px 96px rgba(0, 0, 0, 0.25);
       overflow: hidden;
     }
 
-    /* Subtle progress strip across the top of the card */
     .progress {
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 4px;
-      background: var(--border-soft);
+      height: 3px;
+      background: rgba(148, 163, 184, 0.1);
     }
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      background: linear-gradient(90deg, var(--cyan), var(--indigo), var(--purple));
+      box-shadow: 0 0 12px rgba(129, 140, 248, 0.6);
       border-radius: 0 999px 999px 0;
       width: 0%;
-      transition: width 480ms var(--ease);
+      transition: width 520ms var(--ease-out);
     }
 
     .step-pill {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: "JetBrains Mono", monospace;
       font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      background: var(--border-soft);
-      color: var(--ink-soft);
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--indigo);
+      border: 1px solid rgba(99, 102, 241, 0.25);
       padding: 5px 12px;
       border-radius: 999px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
-    .guided-state { animation: fadeUp 320ms var(--ease); }
+    .guided-state { animation: fadeUp 360ms var(--ease-out); }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     .q-text {
       margin: 0 0 32px;
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: var(--ink);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text);
       line-height: 1.3;
-      letter-spacing: -0.005em;
+      letter-spacing: -0.015em;
+    }
+    .q-text em {
+      font-family: "JetBrains Mono", monospace;
+      font-style: italic;
+      color: var(--cyan-soft);
+      background: rgba(34, 211, 238, 0.1);
+      padding: 1px 8px;
+      border-radius: 6px;
+      margin: 0 2px;
     }
 
     .yes-no {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     .btn-yes, .btn-no {
       position: relative;
-      font: 700 1rem inherit;
+      font: 700 1rem "Plus Jakarta Sans", sans-serif;
       border: none;
       border-radius: 14px;
-      padding: 16px 18px;
+      padding: 18px 20px;
       cursor: pointer;
       color: white;
-      transition: transform 180ms var(--ease), box-shadow 180ms var(--ease),
-                  background 180ms var(--ease);
+      letter-spacing: 0.01em;
+      overflow: hidden;
+      transition: transform 200ms var(--ease-spring),
+                  box-shadow 220ms var(--ease);
+    }
+    .btn-yes::before, .btn-no::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 60%);
+      pointer-events: none;
     }
     .btn-yes {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       box-shadow:
-        0 1px 2px rgba(5, 150, 105, 0.4),
-        0 6px 16px rgba(16, 185, 129, 0.32);
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 2px 4px rgba(5, 150, 105, 0.45),
+        0 8px 24px rgba(16, 185, 129, 0.35);
     }
     .btn-yes:hover {
       transform: translateY(-2px);
       box-shadow:
-        0 2px 4px rgba(5, 150, 105, 0.5),
-        0 10px 22px rgba(16, 185, 129, 0.42);
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 3px 6px rgba(5, 150, 105, 0.5),
+        0 14px 32px rgba(16, 185, 129, 0.5);
     }
     .btn-yes:active { transform: translateY(0); }
     .btn-no {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
       box-shadow:
-        0 1px 2px rgba(220, 38, 38, 0.4),
-        0 6px 16px rgba(239, 68, 68, 0.32);
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 2px 4px rgba(225, 29, 72, 0.45),
+        0 8px 24px rgba(244, 63, 94, 0.35);
     }
     .btn-no:hover {
       transform: translateY(-2px);
       box-shadow:
-        0 2px 4px rgba(220, 38, 38, 0.5),
-        0 10px 22px rgba(239, 68, 68, 0.42);
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 3px 6px rgba(225, 29, 72, 0.5),
+        0 14px 32px rgba(244, 63, 94, 0.5);
     }
     .btn-no:active { transform: translateY(0); }
 
     /* Result state */
+    .result-decor {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: white;
+    }
+    .result-decor svg { width: 32px; height: 32px; }
+    .result-decor.method {
+      background: linear-gradient(135deg, var(--green), var(--green-dk));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 6px 24px rgba(52, 211, 153, 0.5),
+        0 0 32px rgba(52, 211, 153, 0.3);
+    }
+    .result-decor.oval {
+      background: linear-gradient(135deg, var(--purple), var(--purple-dk));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 6px 24px rgba(167, 139, 250, 0.5),
+        0 0 32px rgba(167, 139, 250, 0.3);
+    }
+    .result-decor.dead {
+      background: linear-gradient(135deg, var(--red), var(--red-dk));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 6px 24px rgba(251, 113, 133, 0.5),
+        0 0 32px rgba(251, 113, 133, 0.3);
+    }
+
     .result-tag {
       display: inline-block;
-      font-size: 0.72rem;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7rem;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      padding: 6px 14px;
+      padding: 5px 13px;
       border-radius: 999px;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
+      border: 1px solid;
     }
-    .result-tag.method  { background: #ecfdf5; color: var(--green-dk); }
-    .result-tag.oval    { background: #f5f3ff; color: #6d28d9; }
-    .result-tag.dead    { background: #fef2f2; color: var(--red-dk); }
+    .result-tag.method { background: rgba(52, 211, 153, 0.1);  color: var(--green);  border-color: rgba(52, 211, 153, 0.3); }
+    .result-tag.oval   { background: rgba(167, 139, 250, 0.1); color: var(--purple); border-color: rgba(167, 139, 250, 0.3); }
+    .result-tag.dead   { background: rgba(251, 113, 133, 0.1); color: var(--red);    border-color: rgba(251, 113, 133, 0.3); }
 
     .result-title {
       margin: 0 0 8px;
       font-size: 1.85rem;
       font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--ink);
+      letter-spacing: -0.025em;
       line-height: 1.15;
     }
+    .result-title.method { background: linear-gradient(135deg, var(--green-soft), var(--green)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .result-title.oval   { background: linear-gradient(135deg, var(--purple-soft), var(--purple)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .result-title.dead   { background: linear-gradient(135deg, var(--red-soft), var(--red)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
     .result-sub {
       margin: 0 0 28px;
-      color: var(--ink-soft);
+      color: var(--text-mute);
       font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1.5;
     }
-    .result-decor {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 18px;
-      font-size: 28px;
-      font-weight: 800;
-      color: white;
-    }
-    .result-decor.method { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4); }
-    .result-decor.oval   { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 6px 18px rgba(139, 92, 246, 0.4); }
-    .result-decor.dead   { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4); }
 
     .guided-controls {
       display: flex;
       gap: 8px;
       justify-content: center;
-      margin-top: 16px;
-      padding-top: 16px;
+      padding-top: 18px;
       border-top: 1px solid var(--border-soft);
     }
     .btn-link {
       background: transparent;
       border: none;
-      color: var(--ink-soft);
-      font: 600 0.85rem inherit;
+      color: var(--text-mute);
+      font: 600 0.85rem "Plus Jakarta Sans", sans-serif;
       padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
@@ -493,7 +719,7 @@
     }
     .btn-link:hover {
       color: var(--indigo);
-      background: rgba(79, 70, 229, 0.06);
+      background: rgba(99, 102, 241, 0.1);
     }
     .btn-link[hidden] { display: none; }
 
@@ -501,54 +727,97 @@
        Mobile
        ========================================================= */
     @media (max-width: 720px) {
-      .page { padding: 24px 14px 60px; }
+      .page { padding: 16px 12px 60px; }
+      .hero { padding: 44px 20px 32px; border-radius: 22px; }
+      .hero-title { font-size: 1.85rem; }
+      .hero-subtitle { font-size: 0.95rem; }
       .guided-card { padding: 36px 22px 22px; }
       .q-text { font-size: 1.2rem; }
       .result-title { font-size: 1.5rem; }
       .controls { gap: 8px; }
-      .mode-btn { width: 110px; padding: 8px 12px; }
-      .mode-indicator { width: 110px; }
-      .mode-toggle[data-mode="guided"] .mode-indicator { left: 114px; }
+      .mode-btn { width: 118px; padding: 9px 14px; }
+      .mode-indicator { width: 118px; }
+      .mode-toggle[data-mode="guided"] .mode-indicator { left: 122px; }
+      .sym { display: none; } /* hide decor on mobile to keep it clean */
     }
   </style>
 </head>
 <body data-mode="tree">
   <div class="page">
-    <header>
-      <h1>Which method should I use to solve this quadratic?</h1>
-      <p class="subtitle">Trace your problem through the decision tree or guided step by step questions.</p>
+
+    <!-- =================== HERO =================== -->
+    <header class="hero">
+      <div class="hero-decor" aria-hidden="true">
+        <span class="sym sym-1">ax² + bx + c</span>
+        <span class="sym sym-2">±</span>
+        <span class="sym sym-3">√</span>
+        <span class="sym sym-4">x²</span>
+        <span class="sym sym-5">b²−4ac</span>
+        <span class="sym sym-6">Δ</span>
+        <span class="sym sym-7">π</span>
+        <span class="sym sym-8">∑</span>
+      </div>
+
+      <span class="hero-eyebrow">Algebra · Decision Tree</span>
+      <h1 class="hero-title">Which method should I use<br />to solve a quadratic?</h1>
+      <p class="hero-subtitle">
+        An interactive flowchart for <span class="mono">ax² + bx + c = 0</span>. Trace your problem all the way to a method.
+      </p>
+
       <div class="controls">
         <div class="mode-toggle" data-mode="tree" id="mode-toggle">
           <button class="mode-btn" data-target-mode="tree">Full tree</button>
           <button class="mode-btn" data-target-mode="guided">Step-by-step</button>
           <div class="mode-indicator" aria-hidden="true"></div>
         </div>
-        <button class="reset" id="reset">Reset</button>
+        <button class="reset" id="reset" type="button">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7"/>
+            <path d="M3 4v5h5"/>
+          </svg>
+          Reset
+        </button>
       </div>
     </header>
 
+    <!-- =================== VIEWS =================== -->
     <main class="view-container">
 
-      <!-- ============================== TREE VIEW ============================== -->
+      <!-- =================== TREE VIEW =================== -->
       <svg class="flowchart" viewBox="0 0 1000 1320" xmlns="http://www.w3.org/2000/svg">
         <defs>
+          <!-- Node fills: dark surface, color-tinted -->
+          <linearGradient id="grad-diamond" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"  stop-color="#1e293b" />
+            <stop offset="100%" stop-color="#0f172a" />
+          </linearGradient>
+          <linearGradient id="grad-method" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"  stop-color="#15302a" />
+            <stop offset="100%" stop-color="#0d1f1c" />
+          </linearGradient>
+          <linearGradient id="grad-oval" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"  stop-color="#251c3d" />
+            <stop offset="100%" stop-color="#19132a" />
+          </linearGradient>
+          <linearGradient id="grad-octagon" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"  stop-color="#2c1721" />
+            <stop offset="100%" stop-color="#1a0e16" />
+          </linearGradient>
+
+          <!-- Arrowheads -->
           <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6"
                   markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 12 6 L 0 12 z" fill="#94a3b8" />
+            <path d="M 0 0 L 12 6 L 0 12 z" fill="#475569" />
           </marker>
           <marker id="arrow-chosen" viewBox="0 0 12 12" refX="11" refY="6"
                   markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 12 6 L 0 12 z" fill="#10b981" />
-          </marker>
-          <marker id="arrow-hover" viewBox="0 0 12 12" refX="11" refY="6"
-                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 12 6 L 0 12 z" fill="#4f46e5" />
+            <path d="M 0 0 L 12 6 L 0 12 z" fill="#34d399" />
           </marker>
         </defs>
 
         <!-- ============= NODES ============= -->
 
-        <!-- Q1: start -->
+        <!-- Q1 -->
         <g class="node q" data-node="start">
           <polygon points="200,30 340,100 200,170 60,100" />
           <foreignObject x="60" y="30" width="280" height="140">
@@ -558,20 +827,20 @@
           </foreignObject>
         </g>
 
-        <!-- R: notQuadratic — octagon (dead end / stop sign) -->
+        <!-- R: notQuadratic — octagon dead end -->
         <g class="node octagon" data-node="notQuadratic">
           <polygon points="582,60 818,60 840,82 840,118 818,140 582,140 560,118 560,82" />
           <foreignObject x="560" y="60" width="280" height="80">
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text octagon">
               <div>
-                <span class="tag">Error 404: Not applicable</span>
-                <div class="title">Not a quadratic equation</div>
+                <span class="tag">Not applicable</span>
+                <span class="title">Not a quadratic equation</span>
               </div>
             </div>
           </foreignObject>
         </g>
 
-        <!-- Q2: factorable -->
+        <!-- Q2 -->
         <g class="node q" data-node="factorable">
           <polygon points="200,220 340,290 200,360 60,290" />
           <foreignObject x="60" y="220" width="280" height="140">
@@ -588,13 +857,13 @@
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
               <div>
                 <span class="tag">Method</span>
-                Use factoring!
+                <span class="title">Use factoring!</span>
               </div>
             </div>
           </foreignObject>
         </g>
 
-        <!-- Q3: needExact -->
+        <!-- Q3 -->
         <g class="node q" data-node="needExact">
           <polygon points="200,410 340,480 200,550 60,480" />
           <foreignObject x="60" y="410" width="280" height="140">
@@ -611,18 +880,18 @@
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
               <div>
                 <span class="tag">Method</span>
-                Use graphing!
+                <span class="title">Use graphing!</span>
               </div>
             </div>
           </foreignObject>
         </g>
 
-        <!-- Q4: hasBx -->
+        <!-- Q4 -->
         <g class="node q" data-node="hasBx">
           <polygon points="200,600 340,670 200,740 60,670" />
           <foreignObject x="60" y="600" width="280" height="140">
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-              Is there a bx term?
+              Is there a <em>bx</em> term?
             </div>
           </foreignObject>
         </g>
@@ -634,28 +903,28 @@
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
               <div>
                 <span class="tag">Method</span>
-                Use square roots!
+                <span class="title">Use square roots!</span>
               </div>
             </div>
           </foreignObject>
         </g>
 
-        <!-- Q5: aEquals1 -->
+        <!-- Q5 -->
         <g class="node q" data-node="aEquals1">
           <polygon points="200,790 340,860 200,930 60,860" />
           <foreignObject x="60" y="790" width="280" height="140">
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-              Is a = 1?
+              Is <em>a</em> = 1?
             </div>
           </foreignObject>
         </g>
 
-        <!-- Q6: bxEven -->
+        <!-- Q6 -->
         <g class="node q" data-node="bxEven">
           <polygon points="200,980 340,1050 200,1120 60,1050" />
           <foreignObject x="60" y="980" width="280" height="140">
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text diamond">
-              Is your bx term even?
+              Is your <em>bx</em> term even?
             </div>
           </foreignObject>
         </g>
@@ -667,20 +936,20 @@
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text method">
               <div>
                 <span class="tag">Method</span>
-                Use completing the square!
+                <span class="title">Use completing the square!</span>
               </div>
             </div>
           </foreignObject>
         </g>
 
-        <!-- R: useQuadraticFormula — oval (converging endpoint) -->
+        <!-- R: useQuadraticFormula — converging oval -->
         <g class="node oval" data-node="useQuadraticFormula">
           <ellipse cx="500" cy="1220" rx="180" ry="60" />
           <foreignObject x="320" y="1160" width="360" height="120">
             <div xmlns="http://www.w3.org/1999/xhtml" class="node-text oval">
               <div>
                 <span class="tag">Method</span>
-                Use the quadratic formula!
+                <span class="title">Use the quadratic formula!</span>
               </div>
             </div>
           </foreignObject>
@@ -688,7 +957,6 @@
 
         <!-- ============= EDGES ============= -->
 
-        <!-- start → No → notQuadratic -->
         <g class="edge" data-from="start" data-ans="no">
           <path d="M 340 100 L 560 100" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(450, 80)">
@@ -699,7 +967,6 @@
           </g>
         </g>
 
-        <!-- start → Yes → factorable -->
         <g class="edge" data-from="start" data-ans="yes">
           <path d="M 200 170 L 200 220" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(238, 195)">
@@ -710,7 +977,6 @@
           </g>
         </g>
 
-        <!-- factorable → Yes → useFactoring -->
         <g class="edge" data-from="factorable" data-ans="yes">
           <path d="M 340 290 L 560 290" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(450, 270)">
@@ -721,7 +987,6 @@
           </g>
         </g>
 
-        <!-- factorable → No → needExact -->
         <g class="edge" data-from="factorable" data-ans="no">
           <path d="M 200 360 L 200 410" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(238, 385)">
@@ -732,7 +997,6 @@
           </g>
         </g>
 
-        <!-- needExact → No → useGraphing -->
         <g class="edge" data-from="needExact" data-ans="no">
           <path d="M 340 480 L 560 480" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(450, 460)">
@@ -743,7 +1007,6 @@
           </g>
         </g>
 
-        <!-- needExact → Yes → hasBx -->
         <g class="edge" data-from="needExact" data-ans="yes">
           <path d="M 200 550 L 200 600" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(238, 575)">
@@ -754,7 +1017,6 @@
           </g>
         </g>
 
-        <!-- hasBx → No → useSquareRoots -->
         <g class="edge" data-from="hasBx" data-ans="no">
           <path d="M 340 670 L 560 670" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(450, 650)">
@@ -765,7 +1027,6 @@
           </g>
         </g>
 
-        <!-- hasBx → Yes → aEquals1 -->
         <g class="edge" data-from="hasBx" data-ans="yes">
           <path d="M 200 740 L 200 790" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(238, 765)">
@@ -776,7 +1037,6 @@
           </g>
         </g>
 
-        <!-- aEquals1 → No → useQuadraticFormula (rounded L-route) -->
         <g class="edge" data-from="aEquals1" data-ans="no">
           <path d="M 340 860 L 880 860 Q 900 860 900 880 L 900 1200 Q 900 1220 880 1220 L 680 1220"
                 marker-end="url(#arrow)" />
@@ -788,7 +1048,6 @@
           </g>
         </g>
 
-        <!-- aEquals1 → Yes → bxEven -->
         <g class="edge" data-from="aEquals1" data-ans="yes">
           <path d="M 200 930 L 200 980" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(238, 955)">
@@ -799,7 +1058,6 @@
           </g>
         </g>
 
-        <!-- bxEven → Yes → useCompletingSquare -->
         <g class="edge" data-from="bxEven" data-ans="yes">
           <path d="M 340 1050 L 560 1050" marker-end="url(#arrow)" />
           <g class="edge-lbl-pos" transform="translate(450, 1030)">
@@ -810,7 +1068,6 @@
           </g>
         </g>
 
-        <!-- bxEven → No → useQuadraticFormula (rounded L-route) -->
         <g class="edge" data-from="bxEven" data-ans="no">
           <path d="M 200 1120 L 200 1200 Q 200 1220 220 1220 L 320 1220"
                 marker-end="url(#arrow)" />
@@ -824,14 +1081,13 @@
 
       </svg>
 
-      <!-- ============================== GUIDED VIEW ============================== -->
+      <!-- =================== GUIDED VIEW =================== -->
       <div class="guided" id="guided">
         <div class="guided-card">
           <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
 
-          <!-- Question state -->
           <div class="guided-state" id="state-question">
-            <div class="step-pill">Step <span id="step-num">1</span> of up to 6</div>
+            <div class="step-pill">Step <span id="step-num">1</span> · of up to 6</div>
             <p class="q-text" id="q-text">Do you have a quadratic equation?</p>
             <div class="yes-no">
               <button class="btn-yes" data-ans="yes" id="btn-yes">Yes</button>
@@ -839,12 +1095,11 @@
             </div>
           </div>
 
-          <!-- Result state -->
           <div class="guided-state" id="state-result" hidden>
-            <div class="result-decor method" id="r-decor">✓</div>
+            <div class="result-decor method" id="r-decor"></div>
             <span class="result-tag method" id="r-tag">Method</span>
-            <h2 class="result-title" id="r-title">Use factoring!</h2>
-            <p class="result-sub" id="r-sub">Recommended approach for your equation.</p>
+            <h2 class="result-title method" id="r-title">Use factoring!</h2>
+            <p class="result-sub" id="r-sub"></p>
           </div>
 
           <div class="guided-controls">
@@ -879,61 +1134,109 @@
       start:      "Do you have a quadratic equation?",
       factorable: "Can it be easily factored?",
       needExact:  "Do you need an exact answer?",
-      hasBx:      "Is there a bx</em> term?",
-      aEquals1:   "Is a = 1?",
-      bxEven:     "Is your bx term even?",
+      hasBx:      "Is there a <em>bx</em> term?",
+      aEquals1:   "Is <em>a</em> = 1?",
+      bxEven:     "Is your <em>bx</em> term even?",
     };
+
+    const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+    const ICON_ALERT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>';
 
     const resultInfo = {
       notQuadratic:        { tag: "Not applicable", title: "Not a quadratic equation",
                              sub: "This tool only works for quadratic equations.",
-                             kind: "dead", icon: "!" },
+                             kind: "dead", icon: ICON_ALERT },
       useFactoring:        { tag: "Method", title: "Use factoring!",
-                             sub: "Recommended approach for your equation.",
-                             kind: "method", icon: "✓" },
+                             sub: "The cleanest route when integer factors exist.",
+                             kind: "method", icon: ICON_CHECK },
       useGraphing:         { tag: "Method", title: "Use graphing!",
-                             sub: "Recommended approach for your equation.",
-                             kind: "method", icon: "✓" },
+                             sub: "Good when an approximate visual answer is enough.",
+                             kind: "method", icon: ICON_CHECK },
       useSquareRoots:      { tag: "Method", title: "Use square roots!",
-                             sub: "Recommended approach for your equation.",
-                             kind: "method", icon: "✓" },
+                             sub: "Direct when there is no bx term.",
+                             kind: "method", icon: ICON_CHECK },
       useCompletingSquare: { tag: "Method", title: "Use completing the square!",
-                             sub: "Recommended approach for your equation.",
-                             kind: "method", icon: "✓" },
+                             sub: "Elegant when a = 1 and bx is even.",
+                             kind: "method", icon: ICON_CHECK },
       useQuadraticFormula: { tag: "Method", title: "Use the quadratic formula!",
-                             sub: "Recommended approach for your equation.",
-                             kind: "oval", icon: "✓" },
+                             sub: "The universal fallback — always works.",
+                             kind: "oval", icon: ICON_CHECK },
     };
 
-    // Total possible question-depth used for the progress bar
     const MAX_DEPTH = 6;
 
     /* ==================================================================
        State
        ================================================================== */
-    const path = [];  // [{ from, ans }, ...]
+    const path = [];                          // [{ from, ans }, ...]
+    const prevChosenEdges = new Set();        // for path-draw animation detection
 
     /* ==================================================================
-       Tree-view rendering
+       Tree-view rendering (with animated path drawing)
        ================================================================== */
+    function getChosenEdgeIds() {
+      const set = new Set();
+      let current = "start";
+      for (const { from, ans } of path) {
+        if (from !== current) break;
+        set.add(`${from}|${ans}`);
+        current = tree[current][ans];
+        if (results.has(current)) break;
+      }
+      return set;
+    }
+
+    function animateDraw(pathEl) {
+      const length = pathEl.getTotalLength();
+      pathEl.style.transition = "none";
+      pathEl.style.strokeDasharray = length;
+      pathEl.style.strokeDashoffset = length;
+      // Force reflow so the browser registers the starting state
+      void pathEl.getBoundingClientRect();
+      const duration = Math.min(length * 1.2, 520);
+      pathEl.style.transition =
+        `stroke-dashoffset ${duration}ms cubic-bezier(0.16, 1, 0.3, 1)`;
+      pathEl.style.strokeDashoffset = 0;
+    }
+
+    function clearPathStyle(pathEl) {
+      pathEl.style.transition = "";
+      pathEl.style.strokeDasharray = "";
+      pathEl.style.strokeDashoffset = "";
+    }
+
     function renderTree() {
-      // Clear all chosen / final classes
+      const nextChosen = getChosenEdgeIds();
+
+      // Reset every node + edge
       document.querySelectorAll(".node.chosen, .node.final, .edge.chosen")
               .forEach(el => el.classList.remove("chosen", "final"));
-      document.querySelectorAll(".edge path")
-              .forEach(p => p.setAttribute("marker-end", "url(#arrow)"));
+      document.querySelectorAll(".edge").forEach(edge => {
+        const edgeId = `${edge.dataset.from}|${edge.dataset.ans}`;
+        const p = edge.querySelector("path");
+        p.setAttribute("marker-end", "url(#arrow)");
+        // Clean stale dash on edges that are no longer chosen
+        if (!nextChosen.has(edgeId)) clearPathStyle(p);
+      });
 
+      // Walk and re-apply
       let current = "start";
       for (const { from, ans } of path) {
         if (from !== current) break;
         const next = tree[current][ans];
+        const edgeId = `${from}|${ans}`;
 
         document.querySelector(`[data-node="${current}"]`).classList.add("chosen");
         const edge = document.querySelector(
           `g.edge[data-from="${current}"][data-ans="${ans}"]`
         );
+        const pEl = edge.querySelector("path");
         edge.classList.add("chosen");
-        edge.querySelector("path").setAttribute("marker-end", "url(#arrow-chosen)");
+        pEl.setAttribute("marker-end", "url(#arrow-chosen)");
+
+        if (!prevChosenEdges.has(edgeId)) {
+          animateDraw(pEl);            // newly chosen — draw it
+        }
 
         const nextEl = document.querySelector(`[data-node="${next}"]`);
         if (nextEl) nextEl.classList.add("chosen");
@@ -944,10 +1247,13 @@
           break;
         }
       }
+
+      prevChosenEdges.clear();
+      for (const id of nextChosen) prevChosenEdges.add(id);
     }
 
     /* ==================================================================
-       Guided-view rendering
+       Guided rendering
        ================================================================== */
     const els = {
       stateQ:     document.getElementById("state-question"),
@@ -966,14 +1272,12 @@
     };
 
     function reanimate(el) {
-      // Force the fadeUp animation to replay
       el.style.animation = "none";
       void el.offsetWidth;
       el.style.animation = "";
     }
 
     function renderGuided() {
-      // Walk path to find current node
       let current = "start";
       for (const { from, ans } of path) {
         if (from !== current) break;
@@ -982,7 +1286,6 @@
       }
 
       const isResult = results.has(current);
-
       els.btnBack.hidden    = path.length === 0;
       els.btnRestart.hidden = path.length === 0;
 
@@ -991,11 +1294,12 @@
         els.stateQ.hidden = true;
         els.stateR.hidden = false;
 
-        els.rDecor.textContent = info.icon;
-        els.rDecor.className   = `result-decor ${info.kind}`;
-        els.rTag.textContent   = info.tag;
-        els.rTag.className     = `result-tag ${info.kind}`;
+        els.rDecor.innerHTML  = info.icon;
+        els.rDecor.className  = `result-decor ${info.kind}`;
+        els.rTag.textContent  = info.tag;
+        els.rTag.className    = `result-tag ${info.kind}`;
         els.rTitle.textContent = info.title;
+        els.rTitle.className   = `result-title ${info.kind}`;
         els.rSub.textContent   = info.sub;
 
         els.progress.style.width = "100%";
@@ -1004,7 +1308,7 @@
         els.stateR.hidden = true;
         els.stateQ.hidden = false;
 
-        els.qText.innerHTML = questions[current];
+        els.qText.innerHTML     = questions[current];
         els.stepNum.textContent = path.length + 1;
         els.btnYes.dataset.from = current;
         els.btnNo.dataset.from  = current;
@@ -1027,44 +1331,28 @@
       }
       render();
     }
-
-    function goBack() {
-      path.pop();
-      render();
-    }
-
-    function reset() {
-      path.length = 0;
-      render();
-    }
-
-    function render() {
-      renderTree();
-      renderGuided();
-    }
+    function goBack() { path.pop(); render(); }
+    function reset()  { path.length = 0; render(); }
+    function render() { renderTree(); renderGuided(); }
 
     /* ==================================================================
-       Event wiring
+       Wiring
        ================================================================== */
-    // Tree mode — click any edge group
     document.querySelector(".flowchart").addEventListener("click", e => {
       const edge = e.target.closest("g.edge");
       if (!edge) return;
       advance(edge.dataset.from, edge.dataset.ans);
     });
 
-    // Guided mode — Yes/No buttons + controls
     document.querySelector(".guided").addEventListener("click", e => {
       const ansBtn = e.target.closest("button[data-ans]");
       if (ansBtn) { advance(ansBtn.dataset.from, ansBtn.dataset.ans); return; }
-      if (e.target.id === "btn-back")    { goBack(); return; }
-      if (e.target.id === "btn-restart") { reset();  return; }
+      if (e.target.closest("#btn-back"))    { goBack(); return; }
+      if (e.target.closest("#btn-restart")) { reset();  return; }
     });
 
-    // Reset button (header)
     document.getElementById("reset").addEventListener("click", reset);
 
-    // Mode toggle
     const modeToggle = document.getElementById("mode-toggle");
     modeToggle.addEventListener("click", e => {
       const btn = e.target.closest(".mode-btn");
@@ -1074,7 +1362,6 @@
       document.body.dataset.mode = mode;
     });
 
-    // Initial render
     render();
   </script>
 </body>
